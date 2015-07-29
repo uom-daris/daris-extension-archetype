@@ -2,6 +2,7 @@
 The Maven archetype can be used to generate daris domain specific package projects.
 
 ### 1. Clone the archetype project:
+    git clone https://github.com/uom-daris/daris-extension-archetype.git
 
 ### 2. Install the archetype into your local maven repository:
     cd daris-extension-archetype
