@@ -1,11 +1,13 @@
 # daris-extension-archetype
 The Maven archetype can be used to generate daris domain specific package projects.
 
-### Install the archetype into your local maven repository:
+### 1. Clone the archetype project:
+
+### 2. Install the archetype into your local maven repository:
     cd daris-extension-archetype
     mvn clean install
 
-### Generate a project using the archetype(e.g.):
+### 3. Generate a project using the archetype(e.g.):
     mvn archetype:generate -B \
         -DarchetypeGroupId=au.edu.unimelb.daris \
         -DarchetypeArtifactId=daris-extension-archetype \
@@ -16,3 +18,5 @@ The Maven archetype can be used to generate daris domain specific package projec
         -Dpackage=nig.daris.plugin \
         -Dorg_name_short=nig \
         -Dorg_name_full="Neuroimaging Group"
+
+### 4. Import the generated project into eclipse
