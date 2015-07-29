@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="daris-extension-archetype">
+	<requiredProperties>
+		<requiredProperty key="org_name_short">
+		</requiredProperty>
+		<requiredProperty key="org_name_full">
+		</requiredProperty>
+		<requiredProperty key="org_url">
+			<defaultValue>http://your-organization.org</defaultValue>
+		</requiredProperty>
+	</requiredProperties>
+
+	<!--Add new fileset for resources -->
+	<!--Set filtered="true" to process files in that directory as templates -->
+	<!--Set packaged="false" to remove package folder structure from resource 
+		directory -->
+	<fileSets>
+		<fileSet filtered="false">
+			<directory>src/main/assembly</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="true" packaged="true">
+			<directory>src/main/java</directory>
+		</fileSet>
+		<fileSet filtered="true">
+			<directory>src/main/mfpkg</directory>
+			<includes>
+				<include>__install.tcl</include>
+				<include>__uninstall.tcl</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="false">
+			<directory>src/main/mfpkg</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+			<excludes>
+				<exclude>__install.tcl</exclude>
+				<exclude>__uninstall.tcl</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+</archetype-descriptor>
