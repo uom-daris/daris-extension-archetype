@@ -1,4 +1,3 @@
-##############################################################################
 #                                                                            #
 # Usage:                                                                     #
 #     package.install :arg -name <arg-name> <value>                          #
@@ -14,7 +13,6 @@
 #         action - If Method pre-exists, action = 0 (do nothing),            #
 #                  1 (replace), 2 (create new)                               #
 #                                                                            #
-##############################################################################
 # include the utility functions in utils.tcl.
 source utils.tcl
 
@@ -29,7 +27,7 @@ set DOC_NS         "${ORG}.daris"
 set DICT_NS        "${ORG}.daris"
 set ROLE_NS        "${ORG}.daris"
 set SERVICE_PREFIX "${ORG}.daris"
-set AUTH_DOMAIN    "${ORG}"
+set AUTH_DOMAIN    "daris-test"
 
 #============================================================================
 # Create dictionaries. You need to modify dictionaries.tcl to create 
@@ -38,8 +36,11 @@ set AUTH_DOMAIN    "${ORG}"
 # Note: it is created first because services may, when being reloaded, 
 #       instantiate classes which specify dictionaries
 #============================================================================
+dictionary.namespace.create :namespace ${DICT_NS} :ifexists ignore
+actor.grant :name daris:pssd.administrator :type role \
+    :perm < :access ADMINISTER :resource -type dictionary:namespace ${DICT_NS} >
 source dictionaries.tcl
-create_update_dicts ${DICT_NS}
+create_dictionaries ${DICT_NS}
 
 #=============================================================================
 # Create document types in own doc type namespace
@@ -47,15 +48,8 @@ create_update_dicts ${DICT_NS}
 if { [xvalue exists [asset.doc.namespace.exists :namespace ${DOC_NS}]] == "false" } {
     asset.doc.namespace.create :namespace ${DOC_NS}
 } 
-source doc-types-core.tcl
-create_core_doc_types ${DOC_NS}
-
-source doc-types-generic.tcl
-create_generic_doc_types ${DOC_NS}
-
-# Leave the EAE here as a nice complex example
-source doc-types-EAE.tcl
-create_EAE_doc_types ${DOC_NS}
+source doc-types.tcl
+create_doc_types ${DOC_NS} ${DICT_NS}
 
 #============================================================================
 # Add our Study Types. The command-line arguments allows you to choose to
@@ -89,40 +83,41 @@ if { [info exists action ] } {
     set methodAction $action
 }
 
-source method-human-mri.tcl
-create_method_human_mri ${DOC_NS} $methodAction $fillInMethods
+# ============================================================================
+# Create methods
+# ============================================================================
+source method-generic.tcl
+create_method_generic ${DOC_NS} $methodAction $fillInMethods
 
-source method-animal-mri.tcl
-create_method_animal_mri ${DOC_NS} $methodAction $fillInMethods
+source method-human-generic.tcl
+create_method_human_generic ${DOC_NS} $methodAction $fillInMethods
 
-source method-multi-mode.tcl
-create_method_multi_mode ${DOC_NS} $methodAction $fillInMethods
-
-# Leave the EAE method here as it is a nice example but don't actually make it
-#source method-EAE.tcl
-#create_method_EAE ${DOC_NS} $methodAction
+source method-animal-multimode.tcl
+create_method_animal_multimode ${DOC_NS} $methodAction $fillInMethods
 
 # ============================================================================
 # Add plugin module
 # ============================================================================
-set plugin_label      [string toupper PACKAGE_$package]
+set plugin_label      [string toupper PACKAGE_vicnode.daris.plugin]
 set plugin_namespace  mflux/plugins
 set plugin_zip        "${ARTIFACT_ID}-plugin.zip"
 set plugin_jar        "${ARTIFACT_ID}-plugin.jar"
 set module_class      "${PKG}.DarisPluginModule"
-add_plugin_module ${plugin_namespace} ${plugin_zip} ${plugin_jar} ${module_class} ${plugin_label}
+add_plugin_module ${plugin_namespace} ${plugin_zip} ${plugin_jar} ${module_class} ${plugin_label} { daris-commons.jar }
+
+srefresh
 
 #=============================================================================
 # Set up roles & permissions
 #=============================================================================
 source role-permissions.tcl
-set_role_permissions ${DOC_NS} ${ROLE_NS} ${SERVICE_PREFIX}
+set_role_permissions ${DOC_NS} ${ROLE_NS} ${DICT_NS} ${SERVICE_PREFIX}
 
 #=============================================================================
 # Register a Project role-member exemplar
 #=============================================================================
-source role-members-register.tcl
-register_role_member ${ROLE_NS}
+#source role-members-register.tcl
+#register_role_member ${ROLE_NS}
 
 #=============================================================================
 # Register metadata with the data model
@@ -137,22 +132,3 @@ if { $updateModel == 1 } {
    source metadata-register.tcl
    register_metadata ${DOC_NS}
 }
-
-#=============================================================================
-# Set up a authentication domain (and create a sample user)
-#=============================================================================
-if { [xvalue exists [authentication.domain.exists :domain ${AUTH_DOMAIN}]] == "false" } {
-    authentication.domain.create :domain ${AUTH_DOMAIN}
-}
-
-set create_test_user 0
-if { ${create_test_user} > 0 } {
-    set test_user "test-user"
-    if { [xvalue exists [user.exists :domain ${AUTH_DOMAIN} :user ${test_user} ]] == "false" } {
-        om.pssd.user.create :domain ${AUTH_DOMAIN} :user ${test_user} :name -type first Test :name -type last User :password Test_me0 :project-creator true :role ${ROLE_NS}:pssd.model.user
-    }
-}
-
-## (Optionally) grant authentication domain so that all the users in the domain will be able to grant roles/perms
-#source domain-grant.tcl
-#grant_auth_domain ${AUTH_DOMAIN}

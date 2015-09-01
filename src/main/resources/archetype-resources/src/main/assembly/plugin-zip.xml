@@ -13,4 +13,16 @@
 			<outputDirectory>.</outputDirectory>
 		</file>
 	</files>
+	<dependencySets>
+		<dependencySet>
+			<useStrictFiltering>true</useStrictFiltering>
+			<outputDirectory>/libs</outputDirectory>
+			<useProjectArtifact>true</useProjectArtifact>
+			<scope>provided</scope>
+			<includes>
+				<include>au.edu.unimelb.daris:daris-commons</include>
+			</includes>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+		</dependencySet>
+	</dependencySets>
 </assembly>

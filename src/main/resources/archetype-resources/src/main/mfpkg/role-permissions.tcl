@@ -1,34 +1,17 @@
-proc set_role_permissions { doc_ns role_ns service_prefix } {
+proc set_role_permissions { doc_ns role_ns dict_ns service_prefix } {
 
     # Standard document types
     set doc_perms [ list \
-        [ list document ${doc_ns}:pssd.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.human.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.human.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.identity ACCESS ] \
-        [ list document ${doc_ns}:pssd.identity PUBLISH ] \
-        [ list document ${doc_ns}:pssd.human.identity ACCESS ] \
-        [ list document ${doc_ns}:pssd.human.identity PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.disease ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.disease PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.genetics ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.genetics PUBLISH ] ]
-
-    # EAE doc perms 
-    set EAE_doc_perms [ list \
-        [ list document ${doc_ns}:pssd.EAE.microscopy ACCESS ] \
-        [ list document ${doc_ns}:pssd.EAE.microscopy PUBLISH ] \
-        [ list document ${doc_ns}:pssd.EAE.optic-nerve.section ACCESS ] \
-        [ list document ${doc_ns}:pssd.EAE.optic-nerve.section PUBLISH ] \
-        [ list document ${doc_ns}:pssd.EAE.optic-nerve.removal ACCESS ] \
-        [ list document ${doc_ns}:pssd.EAE.optic-nerve.removal PUBLISH ] \
-        [ list document ${doc_ns}:pssd.EAE.perfusion ACCESS ] \
-        [ list document ${doc_ns}:pssd.EAE.perfusion PUBLISH ] \
-        [ list document ${doc_ns}:pssd.EAE.stain ACCESS ] \
-        [ list document ${doc_ns}:pssd.EAE.stain PUBLISH ] ]
+        [ list document ${doc_ns}:pssd-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-subject PUBLISH ] \
+        [ list document ${doc_ns}:pssd-human-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-human-subject PUBLISH ] \
+        [ list document ${doc_ns}:pssd-identity ACCESS ] \
+        [ list document ${doc_ns}:pssd-identity PUBLISH ] \
+        [ list document ${doc_ns}:pssd-human-identity ACCESS ] \
+        [ list document ${doc_ns}:pssd-human-identity PUBLISH ] \
+        [ list document ${doc_ns}:pssd-animal-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-animal-subject PUBLISH ] ]
 
     # Service access
     set service_perms  [ list \
@@ -42,9 +25,10 @@ proc set_role_permissions { doc_ns role_ns service_prefix } {
     # Role for user of this package; grant this to your users.
     set domain_model_user_role        ${role_ns}:pssd.model.user
     authorization.role.create :ifexists ignore :role ${domain_model_user_role}
+    actor.grant :name ${domain_model_user_role} :type role :perm < :access ACCESS :resource -type dictionary:namespace ${dict_ns} >
+
 
     grant_role_perms ${domain_model_user_role} ${doc_perms}
-    grant_role_perms ${domain_model_user_role} ${EAE_doc_perms}
     grant_role_perms ${domain_model_user_role} ${service_perms}
      
     # Grant end users the right to access the  document namespace
@@ -72,20 +56,16 @@ proc set_role_permissions { doc_ns role_ns service_prefix } {
     # Set the permissions that allow the <ns>.pssd.subject.meta.set service to be called
     # and used by the DICOM server framework
     set dicom_ingest_doc_perms [ list \
-        [ list document ${doc_ns}:pssd.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.human.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.human.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.identity ACCESS ] \
-        [ list document ${doc_ns}:pssd.identity PUBLISH ] \
-        [ list document ${doc_ns}:pssd.human.identity ACCESS ] \
-        [ list document ${doc_ns}:pssd.human.identity PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.subject ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.subject PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.disease ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.disease PUBLISH ] \
-        [ list document ${doc_ns}:pssd.animal.genetics ACCESS ] \
-        [ list document ${doc_ns}:pssd.animal.genetics PUBLISH ] ]
+        [ list document ${doc_ns}:pssd-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-subject PUBLISH ] \
+        [ list document ${doc_ns}:pssd-human-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-human-subject PUBLISH ] \
+        [ list document ${doc_ns}:pssd-identity ACCESS ] \
+        [ list document ${doc_ns}:pssd-identity PUBLISH ] \
+        [ list document ${doc_ns}:pssd-human-identity ACCESS ] \
+        [ list document ${doc_ns}:pssd-human-identity PUBLISH ] \
+        [ list document ${doc_ns}:pssd-animal-subject ACCESS ] \
+        [ list document ${doc_ns}:pssd-animal-subject PUBLISH ]]
 
     # Service that allows the DICOM server to set domain-specific meta-data
     set dicom_ingest_service_perms [ list [ list service ${service_prefix}.* MODIFY ] ]
@@ -100,4 +80,6 @@ proc set_role_permissions { doc_ns role_ns service_prefix } {
     # Doc and service perms
     grant_role_perms $domain_dicom_ingest_role $dicom_ingest_doc_perms
     grant_role_perms $domain_dicom_ingest_role $dicom_ingest_service_perms
+
 }
+
