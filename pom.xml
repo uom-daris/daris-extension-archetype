@@ -4,7 +4,7 @@
 
 	<groupId>au.edu.unimelb.daris</groupId>
 	<artifactId>daris-extension-archetype</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 	<name>daris-extension-archetype</name>
 	<url>https://github.com/uom-daris/daris-extension-archetype</url>
@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>au.edu.unimelb.daris</groupId>
 			<artifactId>daris-commons</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 			<!-- provided so that we do not deploy -->
 			<scope>provided</scope>
 		</dependency>
